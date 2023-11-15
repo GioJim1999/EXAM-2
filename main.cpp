@@ -3,6 +3,7 @@
 #include"MyCalendar.h"
 #include<ctime>
 #include"input.h"
+#include<fstream>
 using namespace std;
 
 //Function prototypes:
@@ -13,6 +14,9 @@ void setMonth(MyCalendar& currentDate);
 void setDay(MyCalendar& currentDate);
 void setCurrentCalendar(MyCalendar& currentDate);
 int setCalendarMenu();
+void setSchedule(MyCalendar& currentDate);
+void saveDateToFile(MyCalendar& currentDate);
+MyCalendar readDateFromFile(MyCalendar& currentDate);
 
 //Precondtion: number (long long int)
 //Postcondition: Returns a string with the passed in integer in word foramt.
@@ -22,12 +26,14 @@ string numberToWords(long long int n);
 //Postcondtion: returns a new MyCalendar object using the system's current time as the arguements.
 MyCalendar getSystemDate();
 
-//FIGURE OUT HOW TO SET SCHEDULE DATE AND COLOR ETC ETC. MAYBE THE LINES IN THE GETTERS PART AND MASSIVE MAYBE BUT THE CALENDAR ITSELF XDDD
+//TODO: FIX FORMATTING FOR DISPLAY SCHEDULED DATES, ADD COLOR DEPEDING ON THE TYPE OF SCHEUDLED DATE
+//IN THE SCHEDULED DATE ONLY ALLOW USER TO ENTER R (return 'dont schedule'), A (awareness), H (Holiday), P(personal), FOR SCHEDULE TYPE, USE MY UNIT TO SET COLOR FOR TYPE
+//ADD COLOR TO CALENDAR DEPENDING ON THE TYPE USING MYUNIT INTEGER
+//MAKE CALENDAR APPEAR, AND MAKE THE LINES APPEAR SURROUNDING THE GETTERS 
 int main()
 {
-	MyCalendar date = getSystemDate();
-	date.scheduleDate(11, 13);
-	MyScheduleDate scheduledDate = date.getScheduleDate(date.getCurrentMonth(), date.getCurrentDay());
+	MyCalendar date;
+	date = getSystemDate();
 	do
 	{
 		system("cls");
@@ -39,7 +45,7 @@ int main()
 		cout << "\n\t";
 		cout << string(100, '_');
 		cout << "\n\tCurrent Day: " << date.getCurrentDay() << date.addDaySuffix() << " - " << date.getDayofWeek();
-		cout << "\n\t: " << scheduledDate;
+		cout << "\n\t: " << date.getScheduleDate();
 		cout << "\n\t";
 		cout << string(100, '_');
 		cout << "\n";
@@ -56,10 +62,14 @@ int main()
 			setDay(date); break;
 		case 'D':
 			setCurrentCalendar(date); break;
-
+		case 'E':
+			setSchedule(date); break;
 		case 'F':
 			date = getSystemDate(); break;
-
+		case 'G':
+			saveDateToFile(date); break;
+		case 'H':
+			readDateFromFile(date); break;
 		}
 	} while (true);
 
@@ -353,4 +363,101 @@ int setCalendarMenu()
 	cout << "\n\t";
 	cout << string(100, '=');
 	return inputInteger("\n\tOption: ", -3, 3);
+}
+
+void setSchedule(MyCalendar& currentDate)
+{
+	int scheduleMonth, scheduleDay;
+	do
+	{
+		system("cls");
+		cout << "\n\tMonth		 :" << currentDate.getMonthName();
+		cout << "\n\tDay		 :" << currentDate.getCurrentDay();
+		cout << "\n\tType		 :" << currentDate.getType();
+		cout << "\n\t	 :" << currentDate.getScheduleDate();
+		cout << "\n";
+		cout << "\n\tScheduling Date: ";
+		cout << "\n\t";
+		cout << string(100, '=');
+		cout << "\n\t1. Schedule a date";
+		cout << "\n\t2. Unschedule a date";
+		cout << "\n\t";
+		cout << string(100, '-');
+		cout << "\n\t3. Display year schedules";
+		cout << "\n\t4. Display month schedules";
+		cout << "\n\t5. Display day schedule";
+		cout << "\n\t0. Return";
+		cout << "\n\t";
+		cout << string(100, '=');
+
+		switch (inputInteger("\n\tOption: ", 0, 5))
+		{
+		case 0:
+			return; break;
+		case 1:
+			scheduleMonth = inputInteger("\n\tEnter a month (1...12): ", 1, 12);
+			scheduleDay = inputInteger("\n\tEnter a day (1...31): ");
+			currentDate.setScheduleDate(inputChar("\n\tWhat type of thingy is it: "), inputString("\n\tDescription: ",true),scheduleMonth, scheduleDay);
+			cout << "\n\tDate has been scheduled!\n";
+			system("pause");
+			break;
+		case 2:
+			scheduleMonth = inputInteger("\n\tEnter a month (1...12): ", 1, 12);
+			scheduleDay = inputInteger("\n\tEnter a day (1...31): ");
+			currentDate.setScheduleDate('U', "uschedule",scheduleMonth,scheduleDay);
+			cout << "\n\tDate has been unscheduled!\n";
+			system("pause");
+			break;
+		case 3:
+			currentDate.displayScheduledDays();
+			system("pause");
+			break;
+		case 4:
+			currentDate.displayScheduledDaysMonth(inputInteger("\n\tEnter a month to display (1...12): ", 1,12));
+			system("pause");
+			break;
+		case 5:
+			currentDate.displayScheduledDay(inputInteger("\n\tEnter a day (1...31): ",1,31), inputInteger("\n\tEnter a month (1...12): ",1,12));
+			system("pause");
+			break;
+		}
+	} while (true);
+
+
+
+	system("pause");
+}
+
+void saveDateToFile(MyCalendar& currentDate)
+{
+	string fileName = to_string(currentDate.getCurrentYear());
+	fileName += ".dat";
+
+	fstream file;
+	file.open(fileName, ios::out | ios::binary);
+
+	file.write(reinterpret_cast<char*>(&currentDate), sizeof(currentDate));
+
+	file.close();
+	cout << "\n\tFile: " + fileName + " has been written to current program directory\n";
+	system("pause");
+}
+
+MyCalendar readDateFromFile(MyCalendar& currentDate)
+{
+	string fileName = inputString("\n\tEnter a file to read: ", false);
+	fstream file;
+	file.open(fileName, ios::in | ios::binary);
+
+	if (!file)
+	{
+		cout << "\n\tERROR: could not read file check spelling!\n";
+		system("pause");
+		return currentDate;
+	}
+	else
+	{
+		file.read(reinterpret_cast<char*>(&currentDate),sizeof(currentDate));
+		return currentDate;
+	}
 }

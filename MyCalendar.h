@@ -19,18 +19,22 @@ public:
 	void setCurrentYear(int newYear);
 	void setCurrentMonth(int newMonth);
 	void setCurrentDay(int newDay);
-	void scheduleDate(int month, int day);
+	void setScheduleDate(char type, string desc, int month, int day);
 
 	//Getters:
 	int getCurrentYear() const;
 	int getCurrentMonth() const;
 	int getCurrentDay() const;
-	MyScheduleDate getScheduleDate(int month, int day) const;
+	MyScheduleDate getScheduleDate() const;
 	string getMonthName() const;
+	string getMonthName(int month) const;
 	string addDaySuffix() const;
 	string getDayofWeek() const;
 	string printDateFormat2() const;
 	bool isLeapYear() const;
+	void displayScheduledDays();
+	void displayScheduledDaysMonth(int month);
+	void displayScheduledDay(int day, int month);
 
 	//Methods:
 	MyCalendar jumpForward(int);

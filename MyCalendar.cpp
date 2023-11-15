@@ -5,6 +5,13 @@ MyCalendar::MyCalendar()
 	currentYear = static_cast<unsigned short>(0);
 	currentDay = static_cast<unsigned short>(0);
 	currentMonth = static_cast<unsigned short>(0);
+
+	for(int i = 0; i < 12; i++)
+		for (int j = 0; j < 31; j++)
+		{
+			this->scheduleDays[i][j].setDescription("unschedule");
+			this->scheduleDays[i][j].setType('U');
+		}
 }
 
 MyCalendar::MyCalendar(int month, int day, int year)
@@ -12,6 +19,13 @@ MyCalendar::MyCalendar(int month, int day, int year)
 	currentDay = static_cast<unsigned short>(day);
 	currentMonth = static_cast<unsigned short>(month);
 	currentYear = static_cast<unsigned short>(year);
+
+	for (int i = 0; i < 12; i++)
+		for (int j = 0; j < 31; j++)
+		{
+			this->scheduleDays[i][j].setDescription("unschedule");
+			this->scheduleDays[i][j].setType('U');
+		}
 }
 
 MyCalendar::MyCalendar(const MyCalendar& obj)
@@ -19,6 +33,10 @@ MyCalendar::MyCalendar(const MyCalendar& obj)
 	currentYear = static_cast<unsigned short>(obj.getCurrentYear());
 	currentMonth = static_cast<unsigned short>(obj.getCurrentMonth());
 	currentDay = static_cast<unsigned short>(obj.getCurrentDay());
+
+	for (int i = 0; i < 12; i++)
+		for (int j = 0; j < 31; j++)
+			scheduleDays[i][j] = obj.scheduleDays[i][j];
 }
 
 //Setters:
@@ -37,10 +55,10 @@ void MyCalendar::setCurrentDay(int newDay)
 	currentDay = static_cast<unsigned short>(newDay);
 }
 
-void MyCalendar::scheduleDate(int month, int day)
+void MyCalendar::setScheduleDate(char type, string desc, int month, int day)
 {
-	scheduleDays[month][day].setDescription("CHRISTMAS");
-	scheduleDays[month][day].setType('H');
+	this->scheduleDays[month - 1][day - 1].setType(type);
+	this->scheduleDays[month - 1][day - 1].setDescription(desc);
 }
 
 //Getters:
@@ -62,6 +80,11 @@ int MyCalendar::getCurrentDay() const
 string MyCalendar::getMonthName() const
 {
 	int month = this->getCurrentMonth();
+	return months[month];
+}
+
+string MyCalendar::getMonthName(int month) const
+{
 	return months[month];
 }
 
@@ -87,18 +110,65 @@ string MyCalendar::addDaySuffix() const
 	}
 }
 
-MyScheduleDate MyCalendar::getScheduleDate(int month, int day) const
+MyScheduleDate MyCalendar::getScheduleDate() const
 {
 
 	MyScheduleDate temp;
 
-	char type = this->scheduleDays[month][day].getType();
-	string desc = this->scheduleDays[month][day].getDescription();
+	char type = this->scheduleDays[this->currentMonth - 1][this->currentDay - 1].getType();
+	string desc = this->scheduleDays[this->currentMonth - 1][this->currentDay - 1].getDescription();
 
 	temp.setType(type);
 	temp.setDescription(desc);
 
 	return temp;
+}
+
+void MyCalendar::displayScheduledDays()
+{
+	int counter = 0;
+	int totalScheduledDays = 0;
+	for (int i = 0; i < 12; i++)
+	{
+		cout << "\n\t" << getMonthName(i + 1) << ": ";
+		for (int j = 0; j < 31; j++)
+		{
+			if (this->scheduleDays[i][j].getType() != 'U')
+			{
+				cout << "\n\t" << to_string(j + 1) << " - " << this->scheduleDays[i][j].getDescription();
+				counter++;
+				totalScheduledDays++;
+			}
+		}
+		if (counter == 0)
+			cout << "\n\t" << "No scheduled dates for this month.\n";
+		counter = 0;
+	}
+	cout << "\n\tTotal Scheduled days for the year: " << totalScheduledDays << "\n";
+}
+
+void MyCalendar::displayScheduledDaysMonth(int month)
+{
+	int counter = 0;
+	for (int i = 0; i < 31; i++)
+	{
+		if (this->scheduleDays[month - 1][i].getType() != 'U')
+		{
+			cout << "\n\t" << i + 1 << " - " << this->scheduleDays[month - 1][i].getDescription();
+			counter++;
+		}
+	}
+	if (counter == 0)
+		cout << "\n\tNo scheduled days for this month.";
+	else
+		cout << "\n\t" << counter << " days scheduled for this month.";
+
+	cout << "\n";
+}
+
+void MyCalendar::displayScheduledDay(int day, int month)
+{
+	cout << "\n\t" << day << " - " << this->scheduleDays[month - 1][day - 1].getDescription() << "\n";
 }
 
 //Methods:
