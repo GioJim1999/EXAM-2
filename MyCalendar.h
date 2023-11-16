@@ -3,6 +3,7 @@
 class MyCalendar : public MyScheduleDate
 {
 	string months[13] = { "unknown", "January", "February", "March", "April", "May", "June" , "July", "August", "September", "October", "November", "December" };
+	enum Colors { blue = 9, green = 10, white = 15, red = 4 };
 private:
 	unsigned short currentYear;
 	unsigned short currentMonth;
@@ -25,7 +26,8 @@ public:
 	int getCurrentYear() const;
 	int getCurrentMonth() const;
 	int getCurrentDay() const;
-	MyScheduleDate getScheduleDate() const;
+	char getDateType(int month, int day) const;
+	string getDateDesc(int month, int day) const;
 	string getMonthName() const;
 	string getMonthName(int month) const;
 	string addDaySuffix() const;
@@ -47,5 +49,6 @@ public:
 	MyCalendar operator--(int);
 
 	friend ostream& operator<<(ostream& out, const MyCalendar& obj);
-};
+	void setConsoleColor2(int color);
 
+};

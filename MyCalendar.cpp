@@ -1,4 +1,6 @@
 #include "MyCalendar.h"
+#include<Windows.h>
+#include<iomanip>
 //Constructors:
 MyCalendar::MyCalendar()
 {
@@ -14,7 +16,7 @@ MyCalendar::MyCalendar()
 		}
 }
 
-MyCalendar::MyCalendar(int month, int day, int year)
+MyCalendar::MyCalendar(int month, int day, int year) 
 {
 	currentDay = static_cast<unsigned short>(day);
 	currentMonth = static_cast<unsigned short>(month);
@@ -110,38 +112,33 @@ string MyCalendar::addDaySuffix() const
 	}
 }
 
-MyScheduleDate MyCalendar::getScheduleDate() const
-{
-
-	MyScheduleDate temp;
-
-	char type = this->scheduleDays[this->currentMonth - 1][this->currentDay - 1].getType();
-	string desc = this->scheduleDays[this->currentMonth - 1][this->currentDay - 1].getDescription();
-
-	temp.setType(type);
-	temp.setDescription(desc);
-
-	return temp;
-}
-
 void MyCalendar::displayScheduledDays()
 {
 	int counter = 0;
 	int totalScheduledDays = 0;
 	for (int i = 0; i < 12; i++)
 	{
-		cout << "\n\t" << getMonthName(i + 1) << ": ";
+		cout << "\n\t" << getMonthName(i + 1) << ":    ";
 		for (int j = 0; j < 31; j++)
 		{
 			if (this->scheduleDays[i][j].getType() != 'U')
 			{
+				if (this->scheduleDays[i][j].getType() == 'H')
+					setConsoleColor2(BACKGROUND_GREEN);
+				if (this->scheduleDays[i][j].getType() == 'P')
+					setConsoleColor2(BACKGROUND_RED);
 				cout << "\n\t" << to_string(j + 1) << " - " << this->scheduleDays[i][j].getDescription();
 				counter++;
 				totalScheduledDays++;
+				setConsoleColor2(white);
 			}
 		}
 		if (counter == 0)
-			cout << "\n\t" << "No scheduled dates for this month.\n";
+		{
+			cout << "";
+			cout << "\tNo scheduled dates for this month.\n";
+		}
+
 		counter = 0;
 	}
 	cout << "\n\tTotal Scheduled days for the year: " << totalScheduledDays << "\n";
@@ -154,10 +151,16 @@ void MyCalendar::displayScheduledDaysMonth(int month)
 	{
 		if (this->scheduleDays[month - 1][i].getType() != 'U')
 		{
+			if (this->scheduleDays[month-1][i].getType() == 'H')
+				setConsoleColor2(BACKGROUND_GREEN);
+			if (this->scheduleDays[month-1][i].getType() == 'P')
+				setConsoleColor2(BACKGROUND_RED);
 			cout << "\n\t" << i + 1 << " - " << this->scheduleDays[month - 1][i].getDescription();
 			counter++;
 		}
+		setConsoleColor2(white);
 	}
+	setConsoleColor2(white);
 	if (counter == 0)
 		cout << "\n\tNo scheduled days for this month.";
 	else
@@ -169,6 +172,16 @@ void MyCalendar::displayScheduledDaysMonth(int month)
 void MyCalendar::displayScheduledDay(int day, int month)
 {
 	cout << "\n\t" << day << " - " << this->scheduleDays[month - 1][day - 1].getDescription() << "\n";
+}
+
+char MyCalendar::getDateType(int month, int day) const
+{
+	return scheduleDays[month - 1][day - 1].getType();
+}
+
+string MyCalendar::getDateDesc(int month, int day) const
+{
+	return scheduleDays[month - 1][day - 1].getDescription();
 }
 
 //Methods:
@@ -474,4 +487,10 @@ MyCalendar MyCalendar::jumpBackward(int n)
 
 	cout << "\n\tJump backward(" + to_string(n) + ")...";
 	return temp;
+}
+
+void MyCalendar::setConsoleColor2(int color)
+{
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(h, color);
 }

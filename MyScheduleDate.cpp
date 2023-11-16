@@ -12,8 +12,8 @@ void MyScheduleDate::setType(char newType)
 	type = newType;
 }
 
-//Getters:
 
+//Getters:
 char MyScheduleDate::getType() const
 {
 	return type;

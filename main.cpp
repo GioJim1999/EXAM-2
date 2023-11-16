@@ -4,9 +4,12 @@
 #include<ctime>
 #include"input.h"
 #include<fstream>
+#include<Windows.h>
+#include<iomanip>
 using namespace std;
 
 //Function prototypes:
+void displayMainMenu(const MyCalendar& date);
 char menuOptions();
 int editDateMenu(string option);
 void setYear(MyCalendar& currentDate);
@@ -16,7 +19,25 @@ void setCurrentCalendar(MyCalendar& currentDate);
 int setCalendarMenu();
 void setSchedule(MyCalendar& currentDate);
 void saveDateToFile(MyCalendar& currentDate);
+void setConsoleColor(int color);
 MyCalendar readDateFromFile(MyCalendar& currentDate);
+
+enum Colors { blue = 9, green = 10, white = 15, red = 4 };
+string awareness[12] = {
+	"Thyroid",
+	"Heart Failure",
+	"Multiple Sclerosis",
+	"Oral Cancer",
+	"Mental Health",
+	"Migrane and Headache",
+	"Juvenile Arthrisis",
+	"Immunization",
+	"Ovarian Cancer",
+	"Breast Cancer",
+	"Lung Cancer",
+	"HIV Aids"
+};
+
 
 //Precondtion: number (long long int)
 //Postcondition: Returns a string with the passed in integer in word foramt.
@@ -26,31 +47,17 @@ string numberToWords(long long int n);
 //Postcondtion: returns a new MyCalendar object using the system's current time as the arguements.
 MyCalendar getSystemDate();
 
-//TODO: FIX FORMATTING FOR DISPLAY SCHEDULED DATES, ADD COLOR DEPEDING ON THE TYPE OF SCHEUDLED DATE
-//IN THE SCHEDULED DATE ONLY ALLOW USER TO ENTER R (return 'dont schedule'), A (awareness), H (Holiday), P(personal), FOR SCHEDULE TYPE, USE MY UNIT TO SET COLOR FOR TYPE
-//ADD COLOR TO CALENDAR DEPENDING ON THE TYPE USING MYUNIT INTEGER
-//MAKE CALENDAR APPEAR, AND MAKE THE LINES APPEAR SURROUNDING THE GETTERS
-//BIG ONE!!! ---> WRITE COMMENTS FOR ALL FUNCTIONS (PRECONDITION: POSTCONDITION:) IE COMMENT THE CODE !!!!!! xDDDD
+
+//TODO: WRITE CODE COMMENTS FOR FUNCTIONS (PRECONDITION: POSTCONDITION:)
+//MAYBE ADD CALENDAR? (big if) leaning towards nah
 int main()
 {
 	MyCalendar date;
 	date = getSystemDate();
 	do
 	{
-		system("cls");
-		cout << "\n\tCurrent Year: " << date.getCurrentYear() << " - " << numberToWords(date.getCurrentYear());
-		date.isLeapYear() ? cout << "(leap)" : cout << "(non-leap)";
-		cout << "\n\t";
-		cout << string(100, '_');
-		cout << "\n\tCurrent Month:	" << date.getCurrentMonth() << " - " << date.getMonthName();
-		cout << "\n\t";
-		cout << string(100, '_');
-		cout << "\n\tCurrent Day: " << date.getCurrentDay() << date.addDaySuffix() << " - " << date.getDayofWeek();
-		cout << "\n\t: " << date.getScheduleDate();
-		cout << "\n\t";
-		cout << string(100, '_');
-		cout << "\n";
-		cout << "\n\tCMPR 121 Exam2: MyCalendar - OOP implementations by Giovanni Jimenez (11-16-2023)";
+		displayMainMenu(date);
+
 		switch (menuOptions())
 		{
 		case 'X': 
@@ -71,31 +78,79 @@ int main()
 			saveDateToFile(date); break;
 		case 'H':
 			readDateFromFile(date); break;
+		default:
+			cout << "\n\tInvalid option please enter (A,B,C,D,E,F,G,H or X)...\n";
+			system("pause");
+			break;
 		}
 	} while (true);
 
 	return EXIT_SUCCESS;
 }
 
+void displayMainMenu(const MyCalendar& date)
+{
+	setConsoleColor(white);
+	system("cls");
+	cout << "\n\tCurrent Year: ";
+	setConsoleColor(blue);
+	cout << setw(8) << date.getCurrentYear() << " - " << numberToWords(date.getCurrentYear());
+	date.isLeapYear() ? cout << "(leap)" : cout << "(non-leap)"; 
+	setConsoleColor(white);
+	cout << "\n\t";
+	cout << string(100, 196);
+	cout << "\n\tCurrent Month:	";
+	setConsoleColor(blue);
+	cout << setw(4) << date.getCurrentMonth() << " - " << date.getMonthName();
+	setConsoleColor(white);
+	cout << "\n\tAwareness: ";
+	setConsoleColor(blue);
+	cout << setw(18) << awareness[date.getCurrentMonth() - 1] << " Month";
+	setConsoleColor(white);
+	cout << "\n\t";
+	cout << string(100, 196);
+	cout << "\n\tCurrent Day: ";
+	setConsoleColor(blue);
+	cout << setw(7) << date.getCurrentDay() << date.addDaySuffix() << " - " << date.getDayofWeek();
+	setConsoleColor(white);
+	cout << "\n\t\t\t  : ";
+	if (date.getDateType(date.getCurrentMonth(), date.getCurrentDay()) == 'U')
+		setConsoleColor(white);
+	else
+	{
+		switch (date.getDateType(date.getCurrentMonth(), date.getCurrentDay()))
+		{
+		case 'H':
+			setConsoleColor(BACKGROUND_GREEN);
+			break;
+		case 'P':
+			setConsoleColor(BACKGROUND_RED);
+			break;
+		}
+	}
+	cout << date.getDateDesc(date.getCurrentMonth(), date.getCurrentDay());
+	setConsoleColor(white);
+	cout << "\n\t";
+	cout << string(100, 196);
+	cout << "\n";
+	cout << "\n\tCMPR 121 Exam2: MyCalendar - OOP implementations by Giovanni Jimenez (11-16-2023)";
+}
+
 char menuOptions()
 {
-	cout << "\n\t";
-	cout << string(100, '=');
+	cout << "\n\t" << string(100, 205);
 	cout << "\n\tA. Setting Current Year";
 	cout << "\n\tB. Setting Current Month";
 	cout << "\n\tC. Setting Current Day";
 	cout << "\n\tD. Setting Current Calendar";
 	cout << "\n\tE. Schedule and Report Dates";
-	cout << "\n\t";
-	cout << string(100, '-');
+	cout << "\n\t" << string(100, 196);
 	cout << "\n\tF. Sync to system's date";
 	cout << "\n\tG. Save calendar to file";
 	cout << "\n\tH. Restore calendar from file";
-	cout << "\n\t";
-	cout << string(100, '-');
+	cout << "\n\t" << string(100, 196);
 	cout << "\n\tX. Exit";
-	cout << "\n\t";
-	cout << string(100, '=');
+	cout << "\n\t" << string(100, 205);
 
 	return inputChar("\n\tOption: ");
 }
@@ -369,13 +424,15 @@ int setCalendarMenu()
 void setSchedule(MyCalendar& currentDate)
 {
 	int scheduleMonth, scheduleDay;
+	char scheduleType;
+	string scheduleDesc;
 	do
 	{
 		system("cls");
 		cout << "\n\tMonth		 :" << currentDate.getMonthName();
 		cout << "\n\tDay		 :" << currentDate.getCurrentDay();
-		cout << "\n\tType		 :" << currentDate.getType();
-		cout << "\n\t	 :" << currentDate.getScheduleDate();
+		cout << "\n\tType		 :" << currentDate.getDateType(currentDate.getCurrentMonth(), currentDate.getCurrentDay());
+		cout << "\n\tDescription	 :" << currentDate.getDateDesc(currentDate.getCurrentMonth(), currentDate.getCurrentDay());
 		cout << "\n";
 		cout << "\n\tScheduling Date: ";
 		cout << "\n\t";
@@ -397,11 +454,24 @@ void setSchedule(MyCalendar& currentDate)
 			return; break;
 		case 1:
 			scheduleMonth = inputInteger("\n\tEnter a month (1...12): ", 1, 12);
-			scheduleDay = inputInteger("\n\tEnter a day (1...31): ");
-			currentDate.setScheduleDate(inputChar("\n\tWhat type of thingy is it: "), inputString("\n\tDescription: ",true),scheduleMonth, scheduleDay);
-			cout << "\n\tDate has been scheduled!\n";
-			system("pause");
-			break;
+			scheduleDay = inputInteger("\n\tEnter a day (1...31): ",1,31);
+			scheduleDesc = inputString("\n\tDescription: ", true);
+			scheduleType = inputChar("\n\tWhat type of schedule: (R (return no schedule), A (Awareness), H (Holiday), P (Personal):  ");
+			if (scheduleType == 'R')
+			{
+				cout << "\n\tDate has NOT been scheduled!";
+				system("pause");
+				break;
+			}
+			else
+			{
+				currentDate.setScheduleDate(scheduleType, scheduleDesc, scheduleMonth, scheduleDay);
+				currentDate.setCurrentMonth(scheduleMonth);
+				currentDate.setCurrentDay(scheduleDay);
+				cout << "\n\tDate has been scheduled!\n";
+				system("pause");
+				break;
+			}
 		case 2:
 			scheduleMonth = inputInteger("\n\tEnter a month (1...12): ", 1, 12);
 			scheduleDay = inputInteger("\n\tEnter a day (1...31): ");
@@ -461,4 +531,10 @@ MyCalendar readDateFromFile(MyCalendar& currentDate)
 		file.read(reinterpret_cast<char*>(&currentDate),sizeof(currentDate));
 		return currentDate;
 	}
+}
+
+void setConsoleColor(int color)
+{
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(h, color);
 }
