@@ -7,13 +7,18 @@ MyScheduleDate::MyScheduleDate()
 }
 
 //Setters:
+
+//Precondition: newType (char)
+//Postcondition: sets the type to newType 
 void MyScheduleDate::setType(char newType)
 {
 	type = newType;
 }
 
-
 //Getters:
+
+//Precondition: N/A
+//Postcondition: returns the type
 char MyScheduleDate::getType() const
 {
 	return type;

@@ -9,20 +9,59 @@
 using namespace std;
 
 //Function prototypes:
+
+//Precondition: date (const MyCalendar&)
+//Postcondition: displays the main menu using data from the passed in object
 void displayMainMenu(const MyCalendar& date);
+
+//Precondition: N/A
+//Postcondition: returns the user's selected menu option
 char menuOptions();
+
+//Precondition: option (string)
+//Postcondition: displays the edit date menu using the passed in option 
 int editDateMenu(string option);
+
+//Precondition: currentDate (MyCalendar&)
+//Postcondition: sets the current year to the passed in object
 void setYear(MyCalendar& currentDate);
+
+//Precondition: currentDate (MyCalendar&)
+//Postcondition: sets the current month to the passed in object
 void setMonth(MyCalendar& currentDate);
+
+//Precondition: currentDate (MyCalendar&)
+//Postcondition: sets the current day to the passed in object
 void setDay(MyCalendar& currentDate);
+
+//Precondition: currentDate (MyCalendar&)
+//Postcondition: sets the current month day year to the object
 void setCurrentCalendar(MyCalendar& currentDate);
+
+//Precondition: N/A
+//Postcondition: returns the selected Calendar Menu option item
 int setCalendarMenu();
+
+//Precondition: currentDate (MyCalendar&)
+//Postcondition: Sets the schedule to the current date
 void setSchedule(MyCalendar& currentDate);
+
+//Precondition: currentDate (MyCalendar)
+//Postcondition: saves current date data to file
 void saveDateToFile(MyCalendar& currentDate);
+
+//Precondition: color (int)
+//Postcondition: sets the console color depeding on the passed in integer
 void setConsoleColor(int color);
+
+//Precondition: currentDate (MyCalendar&)
+//Postcondition: reads a calendar object from a file
 MyCalendar readDateFromFile(MyCalendar& currentDate);
 
+//Enum for colors for setConsoleColor function
 enum Colors { blue = 9, green = 10, white = 15, red = 4 };
+
+//Awareness strings for the month they are for
 string awareness[12] = {
 	"Thyroid",
 	"Heart Failure",
@@ -47,9 +86,7 @@ string numberToWords(long long int n);
 //Postcondtion: returns a new MyCalendar object using the system's current time as the arguements.
 MyCalendar getSystemDate();
 
-
-//TODO: WRITE CODE COMMENTS FOR FUNCTIONS (PRECONDITION: POSTCONDITION:)
-//MAYBE ADD CALENDAR? (big if) leaning towards nah
+//TODO: WRITE COMMENTS
 int main()
 {
 	MyCalendar date;
@@ -90,30 +127,52 @@ int main()
 
 void displayMainMenu(const MyCalendar& date)
 {
+	string str = to_string(date.getCurrentYear()) + " - " + numberToWords(date.getCurrentYear());
+
+	//Year
 	setConsoleColor(white);
 	system("cls");
-	cout << "\n\tCurrent Year: ";
+	cout << "\n\t" << string(1,218) << string(98, 196) << string(1,191);
+	cout << "\n\t" << string(1,179) << "Current Year:    ";
 	setConsoleColor(blue);
-	cout << setw(8) << date.getCurrentYear() << " - " << numberToWords(date.getCurrentYear());
-	date.isLeapYear() ? cout << "(leap)" : cout << "(non-leap)"; 
+	date.isLeapYear() ? str += "(leap)" : str += "(non-leap)";
+	cout  << str << setw(100-str.length() - 18);
 	setConsoleColor(white);
-	cout << "\n\t";
-	cout << string(100, 196);
-	cout << "\n\tCurrent Month:	";
+	cout << string(1, 179);
+
+	str = to_string(date.getCurrentMonth()) + " - " + date.getMonthName();
+
+	//Month
+	cout << "\n\t" << string(1, 195) << string(98, 196) << string(1, 180);
+	cout << "\n\t" << string(1,179) << "Current Month:	  ";
 	setConsoleColor(blue);
-	cout << setw(4) << date.getCurrentMonth() << " - " << date.getMonthName();
+	cout << str << setw(100-str.length() - 18);
 	setConsoleColor(white);
-	cout << "\n\tAwareness: ";
+	cout << string(1, 179);
+
+	str = awareness[date.getCurrentMonth() - 1] + " Month";
+
+	//Awareness
+	cout << "\n\t"<< string(1,179) << "Awareness:       ";
 	setConsoleColor(blue);
-	cout << setw(18) << awareness[date.getCurrentMonth() - 1] << " Month";
+	cout  << str << setw(100 - str.length() - 18);
 	setConsoleColor(white);
-	cout << "\n\t";
-	cout << string(100, 196);
-	cout << "\n\tCurrent Day: ";
+	cout << string(1, 179);
+
+	//DAY
+	str = to_string(date.getCurrentDay()) + date.addDaySuffix() + " - " + date.getDayofWeek();
+	
+	cout << "\n\t" << string(1, 195) << string(98, 196) << string(1, 180);
+	cout << "\n\t" << string(1,179) << "Current Day:     ";
 	setConsoleColor(blue);
-	cout << setw(7) << date.getCurrentDay() << date.addDaySuffix() << " - " << date.getDayofWeek();
+	cout << str << setw(100 - str.length() - 18);
 	setConsoleColor(white);
-	cout << "\n\t\t\t  : ";
+	cout << string(1, 179);
+
+	str = date.getDateDesc(date.getCurrentMonth(), date.getCurrentDay());
+
+	//Scheduled:
+	cout << "\n\t" << string(1,179) << "Scheduled:       ";
 	if (date.getDateType(date.getCurrentMonth(), date.getCurrentDay()) == 'U')
 		setConsoleColor(white);
 	else
@@ -128,10 +187,19 @@ void displayMainMenu(const MyCalendar& date)
 			break;
 		}
 	}
-	cout << date.getDateDesc(date.getCurrentMonth(), date.getCurrentDay());
+	
+	//Description
+	int len = 99 - str.length() - 18;
+
+	cout << str << string(len, 255);
 	setConsoleColor(white);
-	cout << "\n\t";
-	cout << string(100, 196);
+	cout << string(1, 179);
+	cout << "\n\t" << string(1,192) << string(98,196) << string(1,217);
+	
+
+	
+	
+	
 	cout << "\n";
 	cout << "\n\tCMPR 121 Exam2: MyCalendar - OOP implementations by Giovanni Jimenez (11-16-2023)";
 }

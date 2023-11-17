@@ -2,6 +2,7 @@
 #include<Windows.h>
 #include<iomanip>
 //Constructors:
+//Default Constructor (no args)
 MyCalendar::MyCalendar()
 {
 	currentYear = static_cast<unsigned short>(0);
@@ -11,11 +12,13 @@ MyCalendar::MyCalendar()
 	for(int i = 0; i < 12; i++)
 		for (int j = 0; j < 31; j++)
 		{
-			this->scheduleDays[i][j].setDescription("unschedule");
+			this->scheduleDays[i][j].setDescription("unscheduled");
 			this->scheduleDays[i][j].setType('U');
 		}
 }
 
+//Precondtion: month, day, year (int int int)
+//Postcondition: creates a new MyCalendar object using the passed in arguments
 MyCalendar::MyCalendar(int month, int day, int year) 
 {
 	currentDay = static_cast<unsigned short>(day);
@@ -25,11 +28,13 @@ MyCalendar::MyCalendar(int month, int day, int year)
 	for (int i = 0; i < 12; i++)
 		for (int j = 0; j < 31; j++)
 		{
-			this->scheduleDays[i][j].setDescription("unschedule");
+			this->scheduleDays[i][j].setDescription("unscheduled");
 			this->scheduleDays[i][j].setType('U');
 		}
 }
 
+//Precondition: obj (constt MyCalendar&)
+//Postcondition: creates a copy of the passed in object
 MyCalendar::MyCalendar(const MyCalendar& obj)
 {
 	currentYear = static_cast<unsigned short>(obj.getCurrentYear());
@@ -42,21 +47,30 @@ MyCalendar::MyCalendar(const MyCalendar& obj)
 }
 
 //Setters:
+
+//Precondition: newYear (int)
+//Postcondition: Sets the object's year to the newYear
 void MyCalendar::setCurrentYear(int newYear)
 {
 	currentYear = static_cast<unsigned short>(newYear);
 }
 
+//Precondition: newMonth (int)
+//Postcondition: Sets the object's month to the newMonth
 void MyCalendar::setCurrentMonth(int newMonth)
 {
 	currentMonth = static_cast<unsigned short>(newMonth);
 }
 
+//Precondition: newDay (int)
+//Postcondition: Sets the object's day to the newDay
 void MyCalendar::setCurrentDay(int newDay)
 {
 	currentDay = static_cast<unsigned short>(newDay);
 }
 
+//Precondition: type (char), description (string), month (int), day (int)
+//Postcondition: sets the object's schedule type and description to the passed in month day combo
 void MyCalendar::setScheduleDate(char type, string desc, int month, int day)
 {
 	this->scheduleDays[month - 1][day - 1].setType(type);
@@ -64,32 +78,46 @@ void MyCalendar::setScheduleDate(char type, string desc, int month, int day)
 }
 
 //Getters:
+
+//Precondition: N/A
+//Postcondition: returns the year variable
 int MyCalendar::getCurrentYear() const
 {
 	return static_cast<int>(currentYear);
 }
 
+//Precondition: N/A
+//Postcondition: returns the month variable
 int MyCalendar::getCurrentMonth() const
 {
 	return static_cast<int>(currentMonth);
 }
 
+
+//Precondition: N/A
+//Postcondition: returns the day vairable
 int MyCalendar::getCurrentDay() const
 {
 	return static_cast<int>(currentDay);
 }
 
+//Precondition: N/A
+//Postcondition: returns the month name depeding on the object's current month
 string MyCalendar::getMonthName() const
 {
 	int month = this->getCurrentMonth();
 	return months[month];
 }
 
+//Precondition: month (int)
+//Postcondition: returns the month name depeding on the passed in month
 string MyCalendar::getMonthName(int month) const
 {
 	return months[month];
 }
 
+//Precondition: N/A
+//Postcondition: adds the suffix st, nd, rd, th depeding on the day number
 string MyCalendar::addDaySuffix() const
 {
 	int day = this->getCurrentDay();
@@ -112,6 +140,8 @@ string MyCalendar::addDaySuffix() const
 	}
 }
 
+//Precondition: N/A
+//Postcondition: Displays all the scheduled days for the year
 void MyCalendar::displayScheduledDays()
 {
 	int counter = 0;
@@ -144,6 +174,8 @@ void MyCalendar::displayScheduledDays()
 	cout << "\n\tTotal Scheduled days for the year: " << totalScheduledDays << "\n";
 }
 
+//Preconditon: month (int)
+//Postcondition: Displays all the scheduled days for the passed in month
 void MyCalendar::displayScheduledDaysMonth(int month)
 {
 	int counter = 0;
@@ -169,22 +201,36 @@ void MyCalendar::displayScheduledDaysMonth(int month)
 	cout << "\n";
 }
 
+//Precondition: day (int), month (int)
+//Postcondition: displays the schedule for the passed in day and month
 void MyCalendar::displayScheduledDay(int day, int month)
 {
+	if (this->scheduleDays[month - 1][day - 1].getType() == 'H')
+		setConsoleColor2(BACKGROUND_GREEN);
+	else if (this->scheduleDays[month - 1][day - 1].getType() == 'P')
+		setConsoleColor2(BACKGROUND_RED);
 	cout << "\n\t" << day << " - " << this->scheduleDays[month - 1][day - 1].getDescription() << "\n";
+	setConsoleColor2(white);
 }
 
+//Precondition: month (int), day (int)
+//Postcondition: returns the type for the passed in month and day
 char MyCalendar::getDateType(int month, int day) const
 {
 	return scheduleDays[month - 1][day - 1].getType();
 }
 
+//Precondition: month (int), day (int)
+//Postcondition: returns the description for the passed in month day
 string MyCalendar::getDateDesc(int month, int day) const
 {
 	return scheduleDays[month - 1][day - 1].getDescription();
 }
 
 //Methods:
+
+//Precondition: N/A
+//Postcondition: returns the day of the week corresponding to the current date 
 string MyCalendar::getDayofWeek() const
 {
 	int day = this->getCurrentDay();
@@ -213,7 +259,7 @@ string MyCalendar::getDayofWeek() const
 
 	switch (h)
 	{
-	case  0:
+	case 0:
 		return "Saturday"; break;
 	case 1:
 		return "Sunday"; break;
@@ -232,6 +278,8 @@ string MyCalendar::getDayofWeek() const
 	}
 }
 
+//Precondition: N/A
+//Postcondition: Returns true of the current year is a leap year false if not
 bool MyCalendar::isLeapYear() const
 {
 	if (currentYear % 400 == 0)
@@ -244,6 +292,8 @@ bool MyCalendar::isLeapYear() const
 		return false;
 }
 
+//Precondition: N/A
+//Postcondition: Prints out the date in format : "Monday, January 12th, 2023"
 string MyCalendar::printDateFormat2() const
 {
 	return getDayofWeek() + ", " + getMonthName() + " " + to_string(getCurrentDay()) + addDaySuffix() + ", " + to_string(getCurrentYear());
@@ -256,6 +306,8 @@ ostream& operator<<(ostream& out, const MyCalendar& obj)
 	return out;
 }
 
+//Precondition: N/A
+//Postconditon: pre-increments the date object by 1
 MyCalendar MyCalendar::operator++()
 {
 	currentDay++;
@@ -313,6 +365,8 @@ MyCalendar MyCalendar::operator++()
 	return *this;
 }
 
+//Precondition: int
+//Postcondition: post-increments the date object by 1
 MyCalendar MyCalendar::operator++(int)
 {
 	MyCalendar temp(*this);
@@ -373,6 +427,8 @@ MyCalendar MyCalendar::operator++(int)
 	return temp;
 }
 
+//Precondition: N/A
+//Postcondition: pre-decrements the date object by 1
 MyCalendar MyCalendar::operator--()
 {
 	currentDay--;
@@ -418,6 +474,8 @@ MyCalendar MyCalendar::operator--()
 	return *this;
 }
 
+//Precondition: int
+//Postcondition: post-decrements the date object by 1
 MyCalendar MyCalendar::operator--(int)
 {
 	MyCalendar temp(*this);
@@ -464,6 +522,8 @@ MyCalendar MyCalendar::operator--(int)
 	return temp;
 }
 
+//Precondition: n (int)
+//Postcondition: Jumps forward n number of days 
 MyCalendar MyCalendar::jumpForward(int n)
 {
 	MyCalendar temp(*this);
@@ -477,6 +537,8 @@ MyCalendar MyCalendar::jumpForward(int n)
 	return temp;
 }
 
+//Precondition: n (int)
+//Postcondition: Jumps backwards n number of days
 MyCalendar MyCalendar::jumpBackward(int n)
 {
 	MyCalendar temp(*this);
@@ -489,6 +551,8 @@ MyCalendar MyCalendar::jumpBackward(int n)
 	return temp;
 }
 
+//Precondition: color (int)
+//Postcondition: Sets the console color to the specified color 
 void MyCalendar::setConsoleColor2(int color)
 {
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
